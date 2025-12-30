@@ -1,88 +1,87 @@
-HexaStore API 🛒
+# HexaStore API
 
-Сучасний, високопродуктивний REST API для електронної комерції (Marketplace), розроблений на Python. Забезпечує повний цикл роботи інтернет-магазину: від реєстрації користувачів до обробки замовлень.
+HexaStore is a high-performance REST API for a marketplace platform, built with Python and FastAPI. It provides a complete backend solution for managing users, products, and orders in a secure and scalable environment.
 
-🚀 Технологічний стек
+## Technical Stack
 
-Framework: FastAPI (High-performance async framework)
+* Framework: FastAPI (Asynchronous Python framework)
+* Database: PostgreSQL (Asynchronous driver asyncpg)
+* ORM: SQLAlchemy 2.0 (Modern style with Mapped and mapped_column)
+* Migrations: Alembic
+* Authentication: JWT (JSON Web Tokens) with OAuth2 password flow
+* Validation: Pydantic V2
+* Infrastructure: Docker & Docker Compose
 
-Database: PostgreSQL (Async)
+## Project Structure
 
-ORM: SQLAlchemy 2.0 (Modern styling with Mapped & mapped_column)
+```text
+marketplace-backend/
+├── alembic/                # Database migrations history and configuration
+│   └── versions/           # Migration scripts (Users, Products, Orders)
+├── app/
+│   ├── api/
+│   │   ├── routers/        # API endpoints (auth.py, users.py, products.py, orders.py)
+│   │   └── deps.py         # Dependencies (current user, DB session)
+│   ├── core/               # Security (JWT, hashing) and global configuration
+│   ├── models/             # SQLAlchemy database models (Base, User, Product, Order)
+│   ├── schemas/            # Pydantic models for validation and serialization
+│   ├── db/
+│   │   └── session.py      # Database engine and session management
+│   └── main.py             # Application entry point & lifespan management
+├── Dockerfile              # Instructions for building the Docker image
+├── docker-compose.yml      # Multi-container orchestration (App + PostgreSQL)
+├── requirements.txt        # Project dependencies and versions
+├── .gitignore              # Files and directories ignored by Git
+└── README.md               # Project documentation
 
-Migrations: Alembic
+```
 
-Authentication: JWT (JSON Web Tokens) + OAuth2
+## Features
 
-Validation: Pydantic V2
+* User Management: Secure user registration, authentication, and JWT-based session management.
+* Product Catalog: Comprehensive CRUD operations for marketplace products.
+* Access Control: Owner-based permissions; only the creator of a product can update or delete it.
+* Order System: Automated order creation connecting users with products.
+* Database Design: Optimized relational schema with many-to-one relationships.
 
-Architecture: MVC-like (Separation of concerns: Models, Schemas, Routers)
+## Installation and Setup
 
-✨ Функціонал
+### Prerequisites
 
-👤 Користувачі (Users & Auth)
-Реєстрація нових користувачів.
+* Docker and Docker Compose installed on your system.
 
-Автентифікація та видача JWT токенів.
+### Running the Application
 
-Хешування паролів (bcrypt).
-
-Захист маршрутів (Dependency Injection).
-
-📦 Товари (Products)
-
-CRUD операції (Create, Read, Update, Delete).
-
-Business Logic: Тільки власник товару може його видаляти або редагувати.
-
-Перегляд каталогу доступний для всіх, управління — тільки для авторизованих.
-
-🛒 Замовлення (Orders)
-Оформлення замовлень авторизованими користувачами.
-
-Зв'язок "багато-до-одного" (User -> Orders, Product -> Orders).
-
-Перегляд історії власних замовлень.
-
-🛠 Як запустити проект локально
-Клонуйте репозиторій:
-
-Bash
-
+1. Clone the repository:
+```bash
 git clone https://github.com/vlchshn/marketplace-backend.git
 cd marketplace-backend
-Створіть віртуальне середовище:
 
-Bash
+```
 
-python -m venv .venv
-# Для Windows:
-.venv\Scripts\activate
-# Для Mac/Linux:
-source .venv/bin/activate
 
-Встановіть залежності:
+2. Launch with Docker Compose:
+```bash
+docker-compose up --build
 
-Bash
+```
 
-pip install -r requirements.txt
 
-Налаштуйте змінні середовища: Створіть файл .env у корені проекту та додайте налаштування бази даних:
+3. Apply Database Migrations:
+In a separate terminal window, run the following command to create the database schema:
+```bash
+docker-compose exec app alembic upgrade head
 
-Фрагмент коду
+```
 
-DATABASE_URL=postgresql+asyncpg://user:password@localhost/dbname
-SECRET_KEY=your_secret_key
-Запустіть міграції (створення таблиць):
 
-Bash
 
-alembic upgrade head
-Запустіть сервер:
+## API Documentation
 
-Bash
+Once the services are up and running, you can explore and test the API endpoints through the interactive Swagger UI:
 
-uvicorn app.main:app --reload
+URL: [http://127.0.0.1:8000/docs](https://www.google.com/search?q=http://127.0.0.1:8000/docs)
 
-📚 Документація API
-Після запуску сервера документація Swagger UI доступна за адресою: http://127.0.0.1:8000/docs
+---
+
+Developed as a demonstration of modern backend architecture and asynchronous Python development.
