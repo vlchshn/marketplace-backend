@@ -1,0 +1,23 @@
+services:
+  # База даних PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: hexastore_db
+    ports:
+      - "5450:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=hexastore
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis для кешування
+  redis:
+    image: redis:7-alpine
+    container_name: hexastore_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
