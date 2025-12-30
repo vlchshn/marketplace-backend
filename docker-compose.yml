@@ -1,23 +1,33 @@
+version: '3.8'
+
 services:
-  # База даних PostgreSQL
-  db:
-    image: postgres:15-alpine
-    container_name: hexastore_db
+  # --- НОВИЙ БЛОК: Твій Backend ---
+  app:
+    build: .             # Будувати з поточної папки (шукає Dockerfile тут)
+    container_name: marketplace_app
     ports:
-      - "5450:5432"
+      - "8000:8000"      # Відкриваємо порт 8000 назовні
+    depends_on:
+      - db               # Чекати запуску бази даних
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hexastore
+      # Важливо: замість localhost пишемо "db" (назва сервісу бази в мережі докера)
+      - DATABASE_URL=postgresql+asyncpg://user:password@db/dbname
+      - SECRET_KEY=super_secret_key_change_me
+    volumes:
+      - .:/app           # Синхронізація коду: змінюєш у PyCharm -> змінюється в Докері
+
+  # --- БЛОК БАЗИ ДАНИХ (вже був) ---
+  db:
+    image: postgres:15
+    container_name: marketplace_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  # Redis для кешування
-  redis:
-    image: redis:7-alpine
-    container_name: hexastore_redis
-    ports:
-      - "6379:6379"
 
 volumes:
   postgres_data:
