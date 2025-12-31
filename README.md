@@ -1,6 +1,7 @@
 # HexaStore API
 
-HexaStore is a high-performance REST API for a marketplace platform, built with Python and FastAPI. It provides a complete backend solution for managing users, products, and orders in a secure and scalable environment.
+HexaStore is a high-performance REST API for a marketplace platform, built with Python and FastAPI. It provides a
+complete backend solution for managing users, products, and orders in a secure and scalable environment.
 
 ## Technical Stack
 
@@ -16,23 +17,55 @@ HexaStore is a high-performance REST API for a marketplace platform, built with 
 
 ```text
 marketplace-backend/
-├── alembic/                # Database migrations history and configuration
-│   └── versions/           # Migration scripts (Users, Products, Orders)
-├── app/
+├── alembic/                   # Database migrations configuration
+│   ├── versions/              # Migration scripts (history of DB changes)
+│   │   ├── ..._initial_migration.py
+│   │   ├── ..._create_products_table.py
+│   │   └── ..._create_orders_table.py
+│   ├── env.py                 # Alembic environment setup (connects to app models)
+│   └── script.py.mako         # Template for generating new migrations
+│
+├── app/                       # Main application source code
 │   ├── api/
-│   │   ├── routers/        # API endpoints (auth.py, users.py, products.py, orders.py)
-│   │   └── deps.py         # Dependencies (current user, DB session)
-│   ├── core/               # Security (JWT, hashing) and global configuration
-│   ├── models/             # SQLAlchemy database models (Base, User, Product, Order)
-│   ├── schemas/            # Pydantic models for validation and serialization
-│   ├── db/
-│   │   └── session.py      # Database engine and session management
-│   └── main.py             # Application entry point & lifespan management
-├── Dockerfile              # Instructions for building the Docker image
-├── docker-compose.yml      # Multi-container orchestration (App + PostgreSQL)
-├── requirements.txt        # Project dependencies and versions
-├── .gitignore              # Files and directories ignored by Git
-└── README.md               # Project documentation
+│   │   ├── routers/           # API Endpoints (Controllers)
+│   │   │   ├── auth.py        # Authentication routes (login, register)
+│   │   │   ├── products.py    # Product management routes
+│   │   │   └── orders.py      # Order processing routes
+│   │   └── deps.py            # Dependency Injection (e.g., get_current_user, get_db)
+│   │
+│   ├── core/                  # Global configs and security
+│   │   ├── config.py          # Environment settings (Pydantic Settings)
+│   │   └── security.py        # Password hashing and JWT token generation
+│   │
+│   ├── db/                    # Database connection logic
+│   │   └── session.py         # Async engine and session maker setup
+│   │
+│   ├── models/                # SQLAlchemy ORM Models (Database Tables)
+│   │   ├── __init__.py        # Exports models for Alembic
+│   │   ├── base.py            # Declarative base class
+│   │   ├── user.py            # User model
+│   │   ├── product.py         # Product model
+│   │   └── order.py           # Order model
+│   │
+│   ├── schemas/               # Pydantic Schemas (Data Validation & Serialization)
+│   │   ├── user.py            # User registration/response schemas
+│   │   ├── product.py         # Product creation/view schemas
+│   │   ├── order.py           # Order creation schemas
+│   │   └── token.py           # JWT Token schema
+│   │
+│   ├── services/              # Business logic layer (scalable structure)
+│   │
+│   └── main.py                # Application entry point (FastAPI initialization)
+│
+├── .env                       # Environment variables (secrets, DB credentials)
+├── .gitignore                 # Files to exclude from Git
+├── alembic.ini                # Main configuration file for Alembic
+├── docker-compose.yml         # Docker services orchestration (App + DB)
+├── Dockerfile                 # Instructions to build the API container image
+├── poetry.lock                # Locked dependencies versions (for reproducibility)
+├── pyproject.toml             # Project metadata and dependencies (Poetry config)
+├── requirements.txt           # Legacy dependencies list (for compatibility)
+└── README.md                  # Project documentation
 
 ```
 
@@ -53,28 +86,27 @@ marketplace-backend/
 ### Running the Application
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/vlchshn/marketplace-backend.git
 cd marketplace-backend
 
 ```
 
-
 2. Launch with Docker Compose:
+
 ```bash
 docker-compose up --build
 
 ```
 
-
 3. Apply Database Migrations:
-In a separate terminal window, run the following command to create the database schema:
+   In a separate terminal window, run the following command to create the database schema:
+
 ```bash
 docker-compose exec app alembic upgrade head
 
 ```
-
-
 
 ## API Documentation
 
