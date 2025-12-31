@@ -11,31 +11,24 @@ from app.api.deps import get_current_user
 
 router = APIRouter()
 
+
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_order(
-    order_data: OrderCreate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+        order_data: OrderCreate,
+        current_user: User = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
 ):
-    """
-    Зробити замовлення (Купити товар).
-    """
-    # 1. Перевіряємо, чи існує товар з таким ID
     query = select(Product).where(Product.id == order_data.product_id)
     result = await db.execute(query)
     product = result.scalar_one_or_none()
 
     if product is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    # 2. Створюємо замовлення
     new_order = Order(
-        user_id=current_user.id,
-        product_id=product.id,
-        status="completed" # Для спрощення відразу ставимо "виконано"
+        user_id=current_user.id, product_id=product.id, status="completed"
     )
 
     db.add(new_order)
@@ -44,15 +37,11 @@ async def create_order(
 
     return new_order
 
+
 @router.get("/", response_model=list[OrderResponse])
 async def read_my_orders(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+        current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
-    """
-    Подивитися історію своїх замовлень.
-    """
-    # Шукаємо тільки замовлення поточного юзера
     query = select(Order).where(Order.user_id == current_user.id)
     result = await db.execute(query)
     return result.scalars().all()
